@@ -5,10 +5,10 @@ Contents:
 2. [Getting access](https://github.com/LeahRoberts/HPC_notes/main/README.md#getting-access) 
 3. [Where is everything?](https://github.com/LeahRoberts/HPC_notes/main/README.md#where-is-everything?) 
 4. [How to install miniforge](https://github.com/LeahRoberts/HPC_notes/main/README.md#how-to-install-miniforge) 
-5. Submitting jobs
-6. interactive jobs
-7. How should I submit my jobs?
-8. Who do I contact if I have issues? 
+5. [Submitting jobs](https://github.com/LeahRoberts/HPC_notes/main/README.md#submitting-jobs) 
+6. [interactive jobs](https://github.com/LeahRoberts/HPC_notes/main/README.md#interactive-jobs) 
+7. [How should I submit my jobs?](https://github.com/LeahRoberts/HPC_notes/main/README.md#how-should-i-submit-my-jobs?) 
+8. [Who do I contact if I have issues?](https://github.com/LeahRoberts/HPC_notes/main/README.md#who-do-i-contact-if-i-have-issues?) 
 
 
 ## HPC infrastructure
@@ -80,6 +80,8 @@ Now you can create and activate conda environments. You will need to do this eve
 
 ## Submitting jobs
 
+When you submit a job, all the paths will be relative to where you have submitted the script. I.e. if you submit the script in your home directory, the output (unless specified otherwise) will be written to your home directory. Similarly, if you are pointing to a particular file, you  need to give the relative filepath based on where you are submitting the job (or absolute filepath to avoid this problem).
+
 ### example for sbatch
 
 Usually I write the script in a text file and then copy/paste over to a `.sh` file in Bunya. The sbatch script should look like this: 
@@ -115,7 +117,7 @@ To check info on a job that has run, use `seff <jobID>`. This will tell you how 
 
 ### example of ssubmit
 
-Ssubmit is a wrapper for slurm written by Michael Hall to assist in easily submitting jobs to slurm. Ssubmit can help you rapidly submit (many) little jobs. I use it in conjunction with sbatch scripting. 
+[Ssubmit](https://github.com/mbhall88/ssubmit) is a wrapper for slurm written by Michael Hall to assist in easily submitting jobs to slurm. Ssubmit can help you rapidly submit (many) little jobs. I use it in conjunction with sbatch scripting. 
 
 ```
 # to run the same script as above, we simply do:
@@ -123,5 +125,42 @@ ssubmit -S '#!/bin/bash --login' -t 5m -m 1g multiqc "echo "Hello world" > newfi
 
 # to activate a conda environment, we use:
 ssubmit -S '#!/bin/bash --login' -t 5m -m 1g multiqc "conda activate fastp; multiqc ./fastqc"
+
+#You can combine ssubmit with for loops, to submit many jobs at once:
+
+cat names.txt | while read name; do ssubmit -S '#!/bin/bash --login' -t 5m -m 200m ${name}_job "echo ${name} > ${name}_newfile.txt"; done
 ```
 
+## Interactive jobs
+
+Interactive jobs can be useful for when you want to quickly run things, or interactively debug a particular problem. Instead of submitting jobs to a distant worker node and getting the results and output back, you can enter a worker node with the requested resources in order to directly run your analysis.
+
+The general command for an interactive job is: 
+`salloc --nodes=1 --ntasks-per-node=1 --cpus-per-task=1 --mem=2G --job-name=TinyInteractive --time=01:00:00 --partition=general --account=a_uqccr srun --export=PATH,TERM,HOME,LANG --pty /bin/bash -l`
+
+Change the `--cpus-per-task`, `--mem` and `--time` as required. 
+
+There is also the onBunya resource (https://rcc.uq.edu.au/systems/software-platforms-workflow-tools/onbunya) - need to look into this more...
+
+## How should I submit my jobs? 
+
+Consider the job/s you are running, and how long each job will take, and what resources are required. What is the most efficient way to run my analysis? How many times will I need to run this analysis? 
+
+For example, say you have 10 bacterial WGS samples, and you want to run assembly on each of them. You could submit a single sbatch script that run assembly sequentially on each of them. This will take probably 20G RAM, but likely a day or so to complete. Additionally, if one sample fails, it may cause the entire analysis to exit (so you would need to debug and restart).
+
+Alternatively, you could submit a job for each of the 10 bacterial WGS samples and run then in parallel. This would overall take more RAM (~15G each) but would probably finish in 2-3 hours. A single assembly failing would not affect the outcome of the other jobs, as they have been submitted independently. You do need to consider where the output files are being written, to make sure your output is going to independent folders. 
+
+If you need to run something big, and only once, you can be a bit cowboy with how to get it done (needs must, and all). But if you are running something lots of times, it is preferable to be more aquainted with the specific resources needed so you can be as efficient as possible. 
+
+### I'm just going to request 100G of memory because I don't know how much it actually needs
+
+This is _bad_ practice. Mainly because, for each job you run, the resources you request are *charged* against your account. This means that if you request 100G every time, even if you only use 2G, you are charged the full 100G. Why is this bad? The more resources you use, the lower your `fairshare` score becomes, meaning your job priority goes down. This mean when you go to submit more jobs, you will be placed at the bottom of the queue. You should try to get an estimate of how much RAM you need prior to running a large number of jobs. 
+
+
+## Who do I contact if I have issues? 
+
+Your first contact should be your supervisor. Make sure you have information on (a) what you tried to run, (b) the data you are using, and (c) what the error message is.
+
+Your second contact (or for anything that seems to be HPC related) should be rcc-support (rcc-support@uq.edu.au). 
+
+RCC support also runs a number of meetups to troubleshoot issues (https://rcc.uq.edu.au/training-support/meetups).
