@@ -3,12 +3,12 @@ Contents:
 
 1. [HPC infrastructure](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#hpc-infrastructure) 
 2. [Getting access](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#getting-access) 
-3. [Where is everything?](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#where-is-everything?) 
+3. [Where is everything?](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#where-is-everything) 
 4. [How to install miniforge](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#how-to-install-miniforge) 
 5. [Submitting jobs](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#submitting-jobs) 
 6. [interactive jobs](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#interactive-jobs) 
-7. [How should I submit my jobs?](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#how-should-i-submit-my-jobs?) 
-8. [Who do I contact if I have issues?](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#who-do-i-contact-if-i-have-issues?) 
+7. [How should I submit my jobs?](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#how-should-i-submit-my-jobs) 
+8. [Who do I contact if I have issues?](https://github.com/LeahRoberts/HPC_notes/blob/main/README.md#who-do-i-contact-if-i-have-issues) 
 
 
 ## HPC infrastructure
